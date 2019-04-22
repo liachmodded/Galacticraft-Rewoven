@@ -8,13 +8,18 @@ import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+
+import java.util.ArrayList;
 
 public class AluminumWireBlock extends Block implements WireConnectable {
     private static BooleanProperty ATTACHED_NORTH = BooleanProperty.create("attached_north");
@@ -23,6 +28,13 @@ public class AluminumWireBlock extends Block implements WireConnectable {
     private static BooleanProperty ATTACHED_WEST = BooleanProperty.create("attached_west");
     private static BooleanProperty ATTACHED_UP = BooleanProperty.create("attached_up");
     private static BooleanProperty ATTACHED_DOWN = BooleanProperty.create("attached_down");
+    private static final VoxelShape DEFAULT = VoxelShapes.cuboid(0.0D, 14.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    private static final VoxelShape NORTH = VoxelShapes.cuboid(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+    private static final VoxelShape EAST = VoxelShapes.cuboid(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+    private static final VoxelShape SOUTH = VoxelShapes.cuboid(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+    private static final VoxelShape WEST = VoxelShapes.cuboid(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+    private static final VoxelShape UP = VoxelShapes.cuboid(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+    private static final VoxelShape DOWN = VoxelShapes.cuboid(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
     public AluminumWireBlock(Settings settings) {
         super(settings);
@@ -74,6 +86,36 @@ public class AluminumWireBlock extends Block implements WireConnectable {
     protected void appendProperties(StateFactory.Builder<Block, BlockState> stateFactory$Builder_1) {
         super.appendProperties(stateFactory$Builder_1);
         stateFactory$Builder_1.with(ATTACHED_NORTH, ATTACHED_EAST, ATTACHED_SOUTH, ATTACHED_WEST, ATTACHED_UP, ATTACHED_DOWN);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+        ArrayList<VoxelShape> shapes = new ArrayList<>(6);
+
+        if (blockState.get(ATTACHED_NORTH)) {
+            shapes.add(NORTH);
+        }
+        if (blockState.get(ATTACHED_SOUTH)) {
+            shapes.add(SOUTH);
+        }
+        if (blockState.get(ATTACHED_EAST)) {
+            shapes.add(EAST);
+        }
+        if (blockState.get(ATTACHED_WEST)) {
+            shapes.add(WEST);
+        }
+        if (blockState.get(ATTACHED_UP)) {
+            shapes.add(UP);
+        }
+        if (blockState.get(ATTACHED_DOWN)) {
+            shapes.add(DOWN);
+        }
+        if (shapes.isEmpty()) {
+            return DEFAULT;
+        }
+        else {
+            return VoxelShapes.union(DEFAULT, shapes.toArray(new VoxelShape[0]));
+        }
     }
 
     @Override

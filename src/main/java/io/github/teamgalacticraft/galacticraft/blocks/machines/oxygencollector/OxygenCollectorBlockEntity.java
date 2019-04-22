@@ -98,14 +98,12 @@ public class OxygenCollectorBlockEntity extends MachineBlockEntity implements Ti
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
         tag.putInt("Oxygen", oxygen.getCurrentEnergy());
-
         return tag;
     }
 
     @Override
     public void fromTag(CompoundTag tag) {
         super.fromTag(tag);
-
         this.oxygen.setCurrentEnergy(tag.getInt("Oxygen"));
     }
 
